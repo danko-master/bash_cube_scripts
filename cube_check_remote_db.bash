@@ -1,10 +1,10 @@
 #!/bin/bash
 
-path_to_sqlite="/home/danko-progress/SAC/pcub_sac/dcopy.sqlite"
-mysql_user='root'
-mysql_pass='123'
-mysql_host='localhost'
-mysql_db='sac_dev_local2'
+path_to_sqlite="/home/gashnikovon/cubes/pcub_sac/dcopy.sqlite"
+mysql_user='sac'
+mysql_pass='qir29sir'
+mysql_host='192.168.129.134'
+mysql_db='sac_dev'
 
 
 
@@ -17,7 +17,7 @@ sqlite3 $path_to_sqlite  "insert into log (date_time, info) values(datetime('now
 
 
 # check mysql
-mysql_message=$(mysql --user $mysql_user -p$mysql_pass $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at FROM param_vals where created_at > '$last_created_at' limit 1" 2>&1 )
+mysql_message=$(mysql --user $mysql_user -p$mysql_pass -h$mysql_host $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at FROM param_vals where created_at > '$last_created_at' limit 1" 2>&1 )
 if [ ${PIPESTATUS[0]} -ne 0 ]
 then
   message="Ошибка скрипта: ${mysql_message}" 
@@ -49,7 +49,7 @@ else
       sqlite_cmd+="insert into data (param_id, subject_id, value, created_at, year, mounth) values(\"$fieldA\", \"$fieldB\", \"$fieldC\", \"$fieldD\", \"${fieldF:0:4}\", \"${fieldF:5:2}\");"
     fi
     # sqlite3 $path_to_sqlite  "insert into data (param_id, subject_id, value, created_at, year, mounth) values(\"$fieldA\", \"$fieldB\", \"$fieldC\", \"$fieldD\", \"${fieldF:0:4}\", \"${fieldF:5:2}\")"
-  done < <(mysql --user $mysql_user -p$mysql_pass $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at, date_time FROM param_vals where created_at > '$last_created_at'")
+  done < <(mysql --user $mysql_user -p$mysql_pass -h$mysql_host $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at, date_time FROM param_vals where created_at > '$last_created_at'")
   
   # вставим остатки
   sqlite3 $path_to_sqlite "BEGIN TRANSACTION; $sqlite_cmd COMMIT TRANSACTION;"

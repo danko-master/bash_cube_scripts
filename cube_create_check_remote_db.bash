@@ -1,12 +1,12 @@
 #!/bin/bash
 
-path_to_sqlite_dir="/home/danko-progress/SAC/pcub_sac"
+path_to_sqlite_dir="/home/gashnikovon/cubes/pcub_sac"
 path_to_sqlite="$path_to_sqlite_dir/dcopy.sqlite"
 path_to_sqlite_example="$path_to_sqlite_dir/dcopy_empty.sqlite"
-mysql_user='root'
-mysql_pass='123'
-mysql_host='localhost'
-mysql_db='sac_dev_local2'
+mysql_user='sac'
+mysql_pass='qir29sir'
+mysql_host='192.168.129.134'
+mysql_db='sac_dev'
 
 if test -f path_to_sqlite
 then
@@ -20,9 +20,12 @@ cp $path_to_sqlite_example $path_to_sqlite
 
 sqlite3 $path_to_sqlite  "insert into log (date_time, info) values(datetime('now'), 'БД Куба создана')"
 sqlite3 $path_to_sqlite  "insert into log (date_time, info) values(datetime('now'), 'Запуск скрипта выборки данных из БД СЦ')"
+sqlite3 $path_to_sqlite "delete from data"
+sqlite3 $path_to_sqlite "delete from subjects"
+sqlite3 $path_to_sqlite "delete from params"
 
 # check mysql
-mysql_message=$(mysql --user $mysql_user -p$mysql_pass $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at FROM param_vals limit 1" 2>&1 )
+mysql_message=$(mysql --user $mysql_user -p$mysql_pass -h$mysql_host $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at FROM param_vals limit 1" 2>&1 )
 if [ ${PIPESTATUS[0]} -ne 0 ]
 then
   message="Ошибка скрипта: ${mysql_message}" 
@@ -54,7 +57,7 @@ else
       sqlite_cmd+="insert into data (param_id, subject_id, value, created_at, year, mounth) values(\"$fieldA\", \"$fieldB\", \"$fieldC\", \"$fieldD\", \"${fieldF:0:4}\", \"${fieldF:5:2}\");"
     fi
     # sqlite3 $path_to_sqlite  "insert into data (param_id, subject_id, value, created_at, year, mounth) values(\"$fieldA\", \"$fieldB\", \"$fieldC\", \"$fieldD\", \"${fieldF:0:4}\", \"${fieldF:5:2}\")"
-  done < <(mysql --user $mysql_user -p$mysql_pass $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at, date_time FROM param_vals")
+  done < <(mysql --user $mysql_user -p$mysql_pass -h$mysql_host $mysql_db -Bse "SELECT parameter_id, subject_id, val_numeric, created_at, date_time FROM param_vals")
   
   # вставим остатки
   sqlite3 $path_to_sqlite "BEGIN TRANSACTION; $sqlite_cmd COMMIT TRANSACTION;"
@@ -66,7 +69,10 @@ else
   # sqlite3 $path_to_sqlite  "insert into data (param_id, subject_id, value, created_at, year, mounth) values
   echo "Вcего Вставлено записей: $i"
   sqlite3 $path_to_sqlite  "insert into log (date_time, info) values(datetime('now'), 'Вставлено записей: $i')"
+
 fi
+
+echo "Импорт справочников"
 
 
 
