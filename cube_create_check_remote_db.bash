@@ -1,15 +1,13 @@
 #!/bin/bash
 
-path_to_sqlite_dir="/home/gashnikovon/cubes/pcub_sac"
-#path_to_sqlite_dir="/home/danko-progress/SAC/pcub_sac"
+path_to_sqlite_dir="/home/test/cubes/pcub_sac"
 
 path_to_sqlite="$path_to_sqlite_dir/dcopy.sqlite"
 path_to_sqlite_example="$path_to_sqlite_dir/dcopy_empty.sqlite"
 mysql_user='sac'
-mysql_pass='qir29sir'
+mysql_pass='pass'
 
-mysql_host='192.168.129.134'
-#mysql_host='54.188.217.10'
+mysql_host='localhost'
 
 mysql_db='sac_dev'
 
