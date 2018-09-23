@@ -1,9 +1,9 @@
 #!/bin/bash
 
-path_to_sqlite="/home/gashnikovon/cubes/pcub_sac/dcopy.sqlite"
+path_to_sqlite="/home/test/cubes/pcub_sac/dcopy.sqlite"
 mysql_user='sac'
-mysql_pass='qir29sir'
-mysql_host='192.168.129.134'
+mysql_pass='password'
+mysql_host='localhost'
 mysql_db='sac_dev'
 
 
